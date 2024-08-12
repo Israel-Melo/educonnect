@@ -6,21 +6,30 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "./components/Input";
 import { registerSchema } from "@/schemas/registerSchemas";
+import axios from "axios";
+import { BACKEND_URL } from "@/contants";
+
 export type RegisterForm = z.infer<typeof registerSchema>;
+
 export default function Login() {
+  const router = useRouter();
   const { control, handleSubmit } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: RegisterForm) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterForm) => {
+    const registerURL = `${BACKEND_URL}/register`;
+
+    await axios.post(registerURL, data);
+    router.push("/login");
   };
+
   return (
     <View className="flex-1 items-center justify-center gap-4 ">
       <Link href={"/"} asChild>

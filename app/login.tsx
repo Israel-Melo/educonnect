@@ -6,20 +6,27 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { z } from "zod";
 import { loginSchema } from "@/schemas/loginSchemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "./components/Input";
+import { BACKEND_URL } from "@/contants";
+import axios from "axios";
 export type LoginForm = z.infer<typeof loginSchema>;
 export default function Login() {
+  const router = useRouter();
   const { control, handleSubmit } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginForm) => {
-    console.log(data);
+  const onSubmit = async (data: LoginForm) => {
+    const loginURL = `${BACKEND_URL}/login`;
+    const response = await axios.post(loginURL, data);
+    if (response.status === 200) {
+      router.push("/home");
+    }
   };
   return (
     <View className="flex-1 items-center justify-center gap-4 ">
@@ -38,7 +45,9 @@ export default function Login() {
           <Text>Login</Text>
         </TouchableOpacity>
         <Link href={"/cadastro"} asChild>
-          <Text className="text-slate-600  font-bold">Cadastro</Text>
+          <Text className="text-slate-600  font-bold justify-self-stretch">
+            Cadastro
+          </Text>
         </Link>
       </View>
     </View>
